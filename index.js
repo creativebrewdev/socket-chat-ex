@@ -30,6 +30,10 @@ io.on('connection', function(socket){
         socket.emit('chat message', '>>>' + msg);
         socket.broadcast.emit('chat message', msg);
     });
+
+    socket.on('is typing', function(msg){
+        socket.broadcast.emit('is typing', msg);
+    })
 });
 
 http.listen(3000, function(){
