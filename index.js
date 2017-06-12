@@ -10,9 +10,25 @@ app.get('/', function(req,res){
 
 app.use(express.static(path.join(__dirname, 'public')));
 
+var users = 0;
+
 io.on('connection', function(socket){
+    users++;
+    socket.emit('newclientconnect', 'Hey, Welcome!');
+    socket.broadcast.emit('newclientconnect', 
+        'A user has joined the chat. (' + users + ' connected)');
+    
+    console.log(users + ' connected.');
+
+    socket.on('disconnect', function(){
+        users--;
+        io.emit('chat message', 'A user has left the chat. (' + users + ' connected)');
+        console.log(users + ' connected.');
+    });
+    
     socket.on('chat message', function(msg){
-        io.emit('chat message', msg);
+        socket.emit('chat message', '>>>' + msg);
+        socket.broadcast.emit('chat message', msg);
     });
 });
 
